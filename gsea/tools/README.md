@@ -34,7 +34,7 @@
 8../app.py -i ../result/0401/result_unique_result_geneid_result_expression_data.txt -y ../result/0401/result_unique_result_geneid_result_gene_set_database.txt
 ```
 ```shell
-* ./app.py -i ../result/0401/result_geneid_result_gene_set_database.txt -k setdb     
-* ./app.py -i ../result/0401/result_geneid_result_expression_data.txt -y ../result/0401/result_unique_result_geneid_result_gene_set_database.txt 
-* ./app.py -i ../result/0401/result_syn_result_geneid_result_expression_data.txt -n GeneName -g ../result/0401/result_unique_result_geneid_result_gene_set_database.txt
+./app.py -i ../result/0401/result_geneid_result_gene_set_database.txt -k setdb     
+./app.py -i ../result/0401/result_geneid_result_expression_data.txt -y ../result/0401/result_unique_result_geneid_result_gene_set_database.txt 
+./app.py -i ../result/0401/result_syn_result_geneid_result_expression_data.txt -n GeneName -g ../result/0401/result_unique_result_geneid_result_gene_set_database.txt
 ```
