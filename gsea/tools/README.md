@@ -21,7 +21,7 @@
 * -i ..file.. -y ..file.. sync -i file same gene name base -y file on geneid
 
 ## Examples
-```shell
+
 > 1../app.py -i ../data/0401/TWS_1.txt -o median
 > 2../app.py -i ../data/0401/TWS_1.txt -o common
 > 3../app.py -i ../data/0401/result_common_TWS_1.txt -c ./../data/0401/result_median_TWS_1.txt,./../data/0401/result_median_TWS_2.txt,./../data/0401/result_median_TWS_3.txt
@@ -34,4 +34,3 @@
 > 8../app.py -i ../result/0401/result_unique_result_geneid_result_expression_data.txt -y ../result/0401/result_unique_result_geneid_result_gene_set_database.txt
 > 9.note:>./app.py -i ../result/0401/result_geneid_result_gene_set_database.txt -k setdb     >./app.py -i ../result/0401/result_geneid_result_expression_data.txt -y ../result/0401/result_unique_result_geneid_result_gene_set_database.txt >./app.py -i ../result/0401/result_syn_result_geneid_result_expression_data.txt -n GeneName -g ../result/0401/result_unique_result_geneid_result_gene_set_database.txt
 
-```
