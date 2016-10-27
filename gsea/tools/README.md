@@ -27,10 +27,12 @@
 3../app.py -i ../data/0401/result_common_TWS_1.txt -c ./../data/0401/result_median_TWS_1.txt,./../data/0401/result_median_TWS_2.txt,./../data/0401/result_median_TWS_3.txt
 4../app.py -i ../result/0401/result_single_normalize.txt -s expression -t log2
 5../app.py -i ../result/0401/result_expression_data.txt -n a(,b) -g ../result/0401/result_gene_set_database.gmx
- 5.1./app.py -i ../result/0401/result_expression_data.txt -n GeneName -g ../result/0401/result_gene_set_database.txt
- 5.2./app.py -i ../result/0401/result_geneid_result_expression_data.txt -n GeneID -g ../result/0401/result_geneid_result_gene_set_database.txt
+5.1./app.py -i ../result/0401/result_expression_data.txt -n GeneName -g ../result/0401/result_gene_set_database.txt
+5.2./app.py -i ../result/0401/result_geneid_result_expression_data.txt -n GeneID -g ../result/0401/result_geneid_result_gene_set_database.txt
 6../app.py -i ../data/0401/gene_setdbfile.csv(../result/0401/result_expression_data.txt)  -r change(add)  (-b:combine geneid/files)
 7../app.py -i ../result/0401/result_geneid_result_gene_set_database.txt -k setdb(expression) :check repeat geneid
 8../app.py -i ../result/0401/result_unique_result_geneid_result_expression_data.txt -y ../result/0401/result_unique_result_geneid_result_gene_set_database.txt
-9.note:>./app.py -i ../result/0401/result_geneid_result_gene_set_database.txt -k setdb     >./app.py -i ../result/0401/result_geneid_result_expression_data.txt -y ../result/0401/result_unique_result_geneid_result_gene_set_database.txt >./app.py -i ../result/0401/result_syn_result_geneid_result_expression_data.txt -n GeneName -g ../result/0401/result_unique_result_geneid_result_gene_set_database.txt
+```
+```shell
+>./app.py -i ../result/0401/result_geneid_result_gene_set_database.txt -k setdb     >./app.py -i ../result/0401/result_geneid_result_expression_data.txt -y ../result/0401/result_unique_result_geneid_result_gene_set_database.txt >./app.py -i ../result/0401/result_syn_result_geneid_result_expression_data.txt -n GeneName -g ../result/0401/result_unique_result_geneid_result_gene_set_database.txt
 ```
