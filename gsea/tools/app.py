@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 # Copyright (C) yanghongshun@gmail.com
-
+# help:
+# ./app.py -i ../data/20180210/gene20180210.csv -r add (get gene id from gene symbol)
+# ./app.py -i ../data/20180210/gene20180210.csv -r add -b x (combine above result)
+#
 import operator
 import csv
 import types
@@ -9,26 +12,27 @@ import os
 import sys
 import itertools
 import getopt
-import ConfigParser
+import configparser
 import time
 
 from numpy import *
 
-
+def cmp(a, b):
+    return (a > b) - (a < b)
 
 def readCsvDataFromFile(startLine,spliter,csvPath):
 	
 	data = []
 	
-	print "reading file: " + csvPath 
+	print("reading file: " + csvPath)
 	
 	if not os.path.isfile(csvPath):
-		print "file not exist!"
+		print("file not exist!")
 		sys.exit()
 		
 	csvfile=csv.reader(open(csvPath, 'r'),delimiter=spliter)
 	
-	print "storing data"
+	print("storing data")
 	
 	for line in csvfile:
 			data.append(line)
@@ -42,12 +46,12 @@ def readCsvDataFromFile(startLine,spliter,csvPath):
 
 def saveCsvDataToFile(title,data,file_path,fmt=''):
 	
-	print "saving data to file :"+ file_path
+	print("saving data to file :"+ file_path)
 	
 	if os.path.isfile(file_path):
 		os.remove(file_path)
 	
-	file_handle = open(file_path,'wb')
+	file_handle = open(file_path,'w')
 	if fmt=='':
 		csv_writer = csv.writer(file_handle)##delimiter=' ',
 	else:
@@ -58,7 +62,7 @@ def saveCsvDataToFile(title,data,file_path,fmt=''):
 	
 	file_handle.close()
 	
-	print "saved ok"
+	print("saved ok")
 
 def getObjData(columns,refcolumn,startline,spliter,file_path):
 	data=readCsvDataFromFile(startline,spliter,file_path)
@@ -76,10 +80,10 @@ def getObjData(columns,refcolumn,startline,spliter,file_path):
 			refcol = i	
 
 	if len(cols)==0:
-		print 'please tell me which column you need'
+		print('please tell me which column you need')
 		sys.exit(0)
 	if refcol==0:
-		print 'please tell me which reference column '
+		print('please tell me which reference column ')
 		sys.exit(0)
 	
 	del data[0]
@@ -110,24 +114,24 @@ def computerMedian(column,refcolumn,startline,spliter,file_path):
 	#print col
 	#print refcol
 	if col==0:
-		print 'computerMedian:can not find column'
+		print('computerMedian:can not find column')
 		sys.exit(0)
 	if refcol==0:
-		print 'computerMedian:can not find refcolumn'
+		print('computerMedian:can not find refcolumn')
 		sys.exit(0)
 	
 	#print '--column title--'
-	print data[0]
+	print(data[0])
 	del data[0]	#delete title column
 	objMedian = 0
 	#objData = []
 	objDataColumn = []
 	objCount = 0
 	#print data[0]
-	print '--'+column+'--'
-	print col
-	print '--'+refcolumn+'--'
-	print refcol
+	print('--'+column+'--')
+	print(col)
+	print('--'+refcolumn+'--')
+	print(refcol)
 	for i in range(len(data)):
 		#print  data[i][refcol]	##float
 		if data[i][refcol] !='':###refcol   '','Unknown'
@@ -135,15 +139,15 @@ def computerMedian(column,refcolumn,startline,spliter,file_path):
 			objDataColumn.append(float(data[i][col]))
 			objCount +=1
 			
-	print '--All Line Count(not include column name)--'
-	print  len(data)
-	print '--Valid Line Count(not include column name)--'
-	print objCount
+	print('--All Line Count(not include column name)--')
+	print(len(data))
+	print('--Valid Line Count(not include column name)--')
+	print(objCount)
 	objDataColumnArray = array(objDataColumn)
 	objMedian = median(objDataColumnArray)
 	
-	print '--Median--'
-	print objMedian
+	print('--Median--')
+	print(objMedian)
 	
 	return objMedian
 	
@@ -154,7 +158,7 @@ def normalizeColumn(objColumn,objColumns,objData,objColumn_Median):
 		if cmp(objColumns[i],objColumn)==0:
 			objColumnIndex = i
 	if objColumnIndex ==-1:
-		print '--can not find objColumn in objColumns --'
+		print('--can not find objColumn in objColumns --')
 		sys.exit(0)
 	
 	objDataNormalize = []
@@ -178,7 +182,7 @@ def compatData(input_file_path,compat_files_list,objConnectColumn):
 	
 	objCompatListData =[]
 	if len(compat_files_list)==0:
-		print '--compat files is null--'
+		print('--compat files is null--')
 		sys.exit(0)
 	else :
 		#print compat_files_list
@@ -187,7 +191,7 @@ def compatData(input_file_path,compat_files_list,objConnectColumn):
 			objCompatListData.append(readCsvDataFromFile(0,',',compat_files_list[i]))
 			#print objCompatListData[i][0]
 			if len(objCompatBaseData) != len(objCompatListData[i]):
-				print '--row not be equal--'
+				print('--row not be equal--')
 				sys.exit(0)
 	
 
@@ -203,15 +207,15 @@ def compatData(input_file_path,compat_files_list,objConnectColumn):
 	##check probename
 	#for i in range(len(objCompatData)):
 		#print objCompatData[i]
-	print '--check ProbeName--'
-	print objCompatData[1]
+	print('--check ProbeName--')
+	print(objCompatData[1])
 	
 	objCompatFileList = []
 	for i in range(len(compat_files_list)):
 		objCompatFileList.append(os.path.basename(compat_files_list[i]))
 		
-	print '--get compat file list--'
-	print objCompatFileList
+	print('--get compat file list--')
+	print(objCompatFileList)
 	objConnectColumnIndex = []
 	for i in range(len(objCompatData[0])):
 		if cmp(objCompatData[0][i],objConnectColumn)==0:
@@ -219,8 +223,8 @@ def compatData(input_file_path,compat_files_list,objConnectColumn):
 		else :
 			objConnectColumnIndex.append(0)
 	
-	print '--print ProbeName column index--'		
-	print objConnectColumnIndex
+	print('--print ProbeName column index--')		
+	print(objConnectColumnIndex)
 	#need first objConnectColumn
 	#del objConnectColumnIndex[0]
 	#print objConnectColumnIndex
@@ -232,9 +236,9 @@ def compatData(input_file_path,compat_files_list,objConnectColumn):
 			objCompatData[0][objConnectColumnIndex[i]+1]=objCompatFileList[j]
 			j+=1
 	
-	print '--change compat file name--'
-	print 	objCompatData[0]
-	print 	objCompatData[1]
+	print('--change compat file name--')
+	print(objCompatData[0])
+	print(objCompatData[1])
 	
 	#delete 	objConnectColumn
 	objCompatResultData = []
@@ -245,9 +249,9 @@ def compatData(input_file_path,compat_files_list,objConnectColumn):
 				objCompatResultDataLine.append(objCompatData[i][j])
 		
 		objCompatResultData.append(objCompatResultDataLine)
-	print '--check result compat data--'
-	print objCompatResultData[0]
-	print objCompatResultData[1]
+	print('--check result compat data--')
+	print(objCompatResultData[0])
+	print(objCompatResultData[1])
 
 	return objCompatResultData
 
@@ -263,7 +267,7 @@ def expressionData(input_file_path,changeColumns,changeType):
 				changeColumnsIndex.append(i)
 	
 	if len(changeColumnsIndex) == 0:
-		print '--can not find changeColumn--'
+		print('--can not find changeColumn--')
 		sys.exit(0)
 	
 	del normalizeData[0]
@@ -300,7 +304,7 @@ def getInfoByColumns(input_file_path,infoColumns,info_type="name"):
 	info_columns = infoColumns.split(',')
 	
 	if len(info_columns)==0:
-		print '--please tell me which columns you want  --'
+		print('--please tell me which columns you want  --')
 		sys.exit(0)
 	info_result =[]
 	if cmp(info_type,'name')==0:##means has title
@@ -311,18 +315,18 @@ def getInfoByColumns(input_file_path,infoColumns,info_type="name"):
 			try:
 				info_columns_index=name_column.index(info_columns[i])
 			except:
-				print 'some column not be found in the columns'
+				print('some column not be found in the columns')
 				sys.exit(0)
 			
 			info_columns_data = []
 			for r in range(len(info_Data)):
 				info_columns_data.append(info_Data[r][info_columns_index])
 			
-			print '-'*20+info_columns[i]+'-'*20
-			print 'total:'+str(len(info_columns_data))
+			print('-'*20+info_columns[i]+'-'*20)
+			print('total:'+str(len(info_columns_data)))
 			info_columns_res.append(info_columns_data)
 			unique_info_columns_data = {}.fromkeys(info_columns_data).keys()
-			print 'unique total:'+str(len(unique_info_columns_data))
+			print('unique total:'+str(len(unique_info_columns_data)))
 			info_columns_res.append(unique_info_columns_data)
 		info_result.append(info_columns_res)
 	
@@ -345,8 +349,8 @@ def setGeneSetDB(input_file_path):
 
 	#print len(geneSetDB)
 	#print len(geneSetDBNotNull)
-	print "Gene SET DB total:"+str(len(geneSetDBNotNull))
-	print "Gene SET DB Unique total:"+str(len(geneSetDBUnique))
+	print("Gene SET DB total:"+str(len(geneSetDBNotNull)))
+	print("Gene SET DB Unique total:"+str(len(geneSetDBUnique)))
 	
 	return geneSetDBUnique 
 
@@ -355,7 +359,7 @@ def saveDataRowAtColumnsByInDatas(input_file_path,atColumns,inDatas,info_type="n
 	info_Data=readCsvDataFromFile(0,',',input_file_path)
 	at_Columns=atColumns.split(',')
 	if len(at_Columns)!=len(inDatas):
-		print 'atColumn=a,b inDatas=[[column include a],[column include b]] '
+		print('atColumn=a,b inDatas=[[column include a],[column include b]] ')
 		sys.exit(0)
 	
 	saveData=[]
@@ -367,7 +371,7 @@ def saveDataRowAtColumnsByInDatas(input_file_path,atColumns,inDatas,info_type="n
 			try:
 				at_Columns_index.append(name_column.index(at_Columns[i]))
 			except:
-				print 'some column not be found in the columns'
+				print('some column not be found in the columns')
 				sys.exit(0)
 			
 		for r in range(len(info_Data)):
@@ -395,7 +399,7 @@ def saveDataRowAtColumnsByExcludeDatas(input_file_path,atColumns,inDatas,info_ty
 	info_Data=readCsvDataFromFile(0,',',input_file_path)
 	at_Columns=atColumns.split(',')
 	if len(at_Columns)!=len(inDatas):
-		print 'atColumn=a,b inDatas=[[column include a],[column include b]] '
+		print('atColumn=a,b inDatas=[[column include a],[column include b]] ')
 		sys.exit(0)
 	
 	saveData=[]
@@ -407,7 +411,7 @@ def saveDataRowAtColumnsByExcludeDatas(input_file_path,atColumns,inDatas,info_ty
 			try:
 				at_Columns_index.append(name_column.index(at_Columns[i]))
 			except:
-				print 'some column not be found in the columns'
+				print('some column not be found in the columns')
 				sys.exit(0)
 			
 		for r in range(len(info_Data)):
@@ -452,19 +456,19 @@ def convertGeneIDFromGeneName(info_Data,convert_type="add",startConvert=1,find_G
 				else :
 					convert_infoData_row = info_Data[r]
 
-					print info_Data[r][find_GeneName_index]
+					print(info_Data[r][find_GeneName_index])
 					#time.sleep(0.1)
 					currentGeneID	= getGeneIDFromGeneName(info_Data[r][find_GeneName_index])	
 					convert_infoData_row.insert(geneID_index,currentGeneID)
 					
 					if len(currentGeneID)==0:
 						notconvertData.append(convert_infoData_row)
-						print '>'*10
-						print convert_infoData_row
+						print('>'*10)
+						print(convert_infoData_row)
 					#print convert_infoData_row
 					convertData.append(convert_infoData_row)
-					print '-'*10 
-					print convert_infoData_row
+					print('-'*10)
+					print(convert_infoData_row)
 					
 	elif cmp(convert_type,'change')==0:
 		for w in range(len(info_Data)):
@@ -479,7 +483,7 @@ def convertGeneIDFromGeneName(info_Data,convert_type="add",startConvert=1,find_G
 						currentGeneID=[]
 						#print info_Data[w][l]
 						if	info_Data[w][l] !='':
-							print info_Data[w][l]
+							print(info_Data[w][l])
 							#time.sleep(0.1)
 							currentGeneID = getGeneIDFromGeneName(info_Data[w][l])
 							if len(currentGeneID)==0:
@@ -502,10 +506,11 @@ def convertGeneIDFromGeneName(info_Data,convert_type="add",startConvert=1,find_G
 	resData.append(notconvertData)
 	
 	return resData
-	
-def getGeneIDFromGeneName(geneName,Organism='Homo'):
+	#Homo
+	#Mus musculus
+def getGeneIDFromGeneName(geneName,Organism='Mus musculus'):
 	if geneName=='':
-		print '--gene name can not be null--'
+		print('--gene name can not be null--')
 		sys.exit(0)
 	
 	geneIDs=[]
@@ -525,37 +530,41 @@ def getGeneIDFromGeneName(geneName,Organism='Homo'):
 		handle.close()
 	
 	if len(record['IdList'])==0:	
-		print '-'*20+geneName+'-'*20
-		print '--cant be found--'
-		print '--no geneID!--'
+		print('-'*20+geneName+'-'*20)
+		print('--cant be found--')
+		print('--no geneID!--')
 	else:
 		if len(record['IdList'])==1:
 				geneIDs.append(record['IdList'][0])
 		elif  len(record['IdList']) >1:
-			for i in range(len(record['IdList'])):		
+			for i in range(len(record['IdList'])):
 				handle_list = Entrez.esummary(db="gene", id=record['IdList'][i])
 				record_list = Entrez.read(handle_list)
 				handle_list.close()
 				
 				if  len(record_list)>1:
-					print '-'*10+geneName+':'+str(record['IdList'][i])+'-'*10
-					print 'one geneID more geneName'
+					print('-'*10+geneName+':'+str(record['IdList'][i])+'-'*10)
+					print('one geneID more geneName')
 					for k in range(len(record_list)):
-						print '-'*5+'gene Name:'+str(record_list[k]['Name'])+'-'*5
+						print('-'*5+'gene Name:'+str(record_list[k]['Name'])+'-'*5)
 				else:	
-					#print record_list[0]['Status']
-					if cmp(record_list[0]['Name'],geneName)==0:
-						#if record_list[0]['Status']=='0':
-						if record_list[0]['ChrStart']!=999999999:##999999999 replaced
+					#2015 Homo:record_list[0]['Name']
+					#2018 Mus:record_list['DocumentSummarySet']['DocumentSummary'][0]['Name']
+					if cmp(record_list['DocumentSummarySet']['DocumentSummary'][0]['Name'],geneName)==0:
+						#2015 Homo:record_list[0]['ChrStart']
+						#2018 Mus:record_list['DocumentSummarySet']['DocumentSummary'][0]['ChrStart']
+						if record_list['DocumentSummarySet']['DocumentSummary'][0]['ChrStart']!=999999999:##999999999 replaced
 							geneIDs.append(record['IdList'][i])
 			
 		#record["Count"] >= 2
 		if len(geneIDs)==0:
-			print '-'*5+geneName+'-'*5
-			print ' no  gene ID'
+			print('-'*5+geneName+'-'*5)
+			print(' no  gene ID')
 		elif len(geneIDs)>1:
-			print '-'*5+geneName+'-'*5
-			print ' more than one gene ID haha'
+			print('-'*5+geneName+'-'*5)
+			print(' more than one gene ID,keep first one')
+			##keep the first one
+			geneIDs=geneIDs[:1]
 
 	return geneIDs
 
@@ -590,33 +599,33 @@ def main(argv):
 	try:
 		opts, args = getopt.getopt(argv,"hi:o:c:s:t:n:g:p:r:b:k:y:",["input_file=","output=","compat_files=","step=",'change_type=','info_columns=','gene_db=','temp=','convert=','combine=','check=','sync='])
 	except getopt.GetoptError:
-		print 'please -h see help'
+		print('please -h see help')
 		sys.exit(2)
 	for opt, arg in opts:
 		if opt == '-h':
-			print '-h,see help list below '
-			print '-p just for developer'
-			print '	-i setting the input file'
-			print '	-o (output option:)median,common'
-			print '	-c (compat_files:)a.txt,b.txt'
-			print '	-s (step=)expression'
-			print '	-t (change type = )log2'
-			print '	-n (info_columns=)a,b -g ./../data/0401/gene_setdbfile.csv '
-			print '	-r change(add)  -i ../data/0401/gene_setdbfile.csv(../result/0401/result_expression_data.txt) (-b x)'
-			print '	-k setdb(expression) -i ../result/0401/result_geneid_result_gene_set_database.txt'
-			print '	-i ..file.. -y ..file.. sync -i file same gene name base -y file on geneid'
-			print '-'*100
-			print '1、	./app.py -i ../data/0401/TWS_1.txt -o median'
-			print '2、	./app.py -i ../data/0401/TWS_1.txt -o common'
-			print '3、	./app.py -i ../data/0401/result_common_TWS_1.txt	 -c ./../data/0401/result_median_TWS_1.txt,./../data/0401/result_median_TWS_2.txt,./../data/0401/result_median_TWS_3.txt'
-			print '4、	./app.py -i ../result/0401/result_single_normalize.txt -s expression -t log2'
-			print '5、 ./app.py -i ../result/0401/result_expression_data.txt -n a(,b) -g ../result/0401/result_gene_set_database.gmx'
-			print '5-1、 ./app.py -i ../result/0401/result_expression_data.txt -n GeneName -g ../result/0401/result_gene_set_database.txt'
-			print '5-2、 ./app.py -i ../result/0401/result_geneid_result_expression_data.txt -n GeneID -g ../result/0401/result_geneid_result_gene_set_database.txt'
-			print '6、 ./app.py -i ../data/0401/gene_setdbfile.csv(../result/0401/result_expression_data.txt)  -r change(add)  (-b:combine geneid/files)'
-			print '7、./app.py -i ../result/0401/result_geneid_result_gene_set_database.txt -k setdb(expression) :check repeat geneid'
-			print '8、./app.py -i ../result/0401/result_unique_result_geneid_result_expression_data.txt -y ../result/0401/result_unique_result_geneid_result_gene_set_database.txt'
-			print 'note:>./app.py -i ../result/0401/result_geneid_result_gene_set_database.txt -k setdb	>./app.py -i ../result/0401/result_geneid_result_expression_data.txt -y ../result/0401/result_unique_result_geneid_result_gene_set_database.txt >./app.py -i ../result/0401/result_syn_result_geneid_result_expression_data.txt -n GeneName -g ../result/0401/result_unique_result_geneid_result_gene_set_database.txt ' 
+			print('-h,see help list below ')
+			print('-p just for developer')
+			print('	-i setting the input file')
+			print('	-o (output option:)median,common')
+			print('	-c (compat_files:)a.txt,b.txt')
+			print('	-s (step=)expression')
+			print('	-t (change type = )log2')
+			print('	-n (info_columns=)a,b -g ./../data/0401/gene_setdbfile.csv ')
+			print('	-r change(add)  -i ../data/0401/gene_setdbfile.csv(../result/0401/result_expression_data.txt) (-b x)')
+			print('	-k setdb(expression) -i ../result/0401/result_geneid_result_gene_set_database.txt')
+			print('	-i ..file.. -y ..file.. sync -i file same gene name base -y file on geneid')
+			print('-'*100)
+			print('1、	./app.py -i ../data/0401/TWS_1.txt -o median')
+			print('2、	./app.py -i ../data/0401/TWS_1.txt -o common')
+			print('3、	./app.py -i ../data/0401/result_common_TWS_1.txt	 -c ./../data/0401/result_median_TWS_1.txt,./../data/0401/result_median_TWS_2.txt,./../data/0401/result_median_TWS_3.txt')
+			print('4、	./app.py -i ../result/0401/result_single_normalize.txt -s expression -t log2')
+			print('5、 ./app.py -i ../result/0401/result_expression_data.txt -n a(,b) -g ../result/0401/result_gene_set_database.gmx')
+			print('5-1、 ./app.py -i ../result/0401/result_expression_data.txt -n GeneName -g ../result/0401/result_gene_set_database.txt')
+			print('5-2、 ./app.py -i ../result/0401/result_geneid_result_expression_data.txt -n GeneID -g ../result/0401/result_geneid_result_gene_set_database.txt')
+			print('6、 ./app.py -i ../data/0401/gene_setdbfile.csv(../result/0401/result_expression_data.txt)  -r change(add)  (-b:combine geneid/files)')
+			print('7、./app.py -i ../result/0401/result_geneid_result_gene_set_database.txt -k setdb(expression) :check repeat geneid')
+			print('8、./app.py -i ../result/0401/result_unique_result_geneid_result_expression_data.txt -y ../result/0401/result_unique_result_geneid_result_gene_set_database.txt')
+			print('note:>./app.py -i ../result/0401/result_geneid_result_gene_set_database.txt -k setdb	>./app.py -i ../result/0401/result_geneid_result_expression_data.txt -y ../result/0401/result_unique_result_geneid_result_gene_set_database.txt >./app.py -i ../result/0401/result_syn_result_geneid_result_expression_data.txt -n GeneName -g ../result/0401/result_unique_result_geneid_result_gene_set_database.txt ') 
 			sys.exit()
 		elif opt in ("-i","--input_file"):
 			input_file_path = arg
@@ -627,7 +636,7 @@ def main(argv):
 		elif opt in ("-s","--step"):
 			step = arg
 		elif opt in ("-t","--change_type"):
-			change_type = arg
+			change_type = arg·
 		elif opt in ("-n","--info_columns"):
 			info_columns = arg
 		elif opt in ("-g","--gene_db"):
@@ -646,7 +655,7 @@ def main(argv):
 	
 	if temp !='':
 		geneIDs = getGeneIDFromGeneName(temp)
-		print geneIDs
+		print(geneIDs)
 		sys.exit(0)
 	
 	if cmp(input_file_path,'')!=0:		
@@ -710,7 +719,7 @@ def main(argv):
 										'result_median_untreated_3.txt'
 										]
 			if change_type=='':
-				print '--set change type (log2) for expression data on change'
+				print('--set change type (log2) for expression data on change')
 				sys.exit(0)
 			else:
 				changeType = change_type
@@ -726,7 +735,7 @@ def main(argv):
 			
 			##get geneset unique
 			if gene_db_input_file_path=='':
-				print 'dont find gene db file'
+				print('dont find gene db file')
 				sys.exit(0)
 			
 			geneSetDB=setGeneSetDB(gene_db_input_file_path)
@@ -752,9 +761,9 @@ def main(argv):
 			#info_columns_result[0][2] 就是info_columns_result[0][0]中的gene在genesetdb中出现的元素集合
 			#info_columns_result[0][3] 就是info_columns_result[0][1]中的gene在genesetdb中出现的元素集合
 
-			print 'OBJ gene Exist in Gene SET DB:'+str( len(info_columns_result[0][2]))
+			print('OBJ gene Exist in Gene SET DB:'+str( len(info_columns_result[0][2])))
 			#print len({}.fromkeys(info_columns_result[0][2]).keys()) check
-			print 'OBJ gene Unique Exist in Gene SET DB:'+str( len(info_columns_result[0][3]) )
+			print('OBJ gene Unique Exist in Gene SET DB:'+str( len(info_columns_result[0][3]) ))
 			
 			inExistDatas=[]
 			inExistDatas.append(info_columns_result[0][3])
@@ -811,8 +820,8 @@ def main(argv):
 				if (os.path.isfile(output_file_convert_path) and os.path.isfile(output_file_notconvert_path))==False:
 				#debug
 					if convert_combine==1:##-b
-						print 'dont compute end of the file to find geneid'
-						print 'please dont use -b option to get all geneid about this file'
+						print('dont compute end of the file to find geneid')
+						print('please dont use -b option to get all geneid about this file')
 						sys.exit(0)
 					rData=[[],[]]
 					if cmp(convertGeneName_GeneID,'add')==0:
@@ -824,7 +833,7 @@ def main(argv):
 							try:
 								find_GeneName_index = name_column.index(convert_base_column)
 							except:
-								print 'some column not be found in the columns'
+								print('some column not be found in the columns')
 								sys.exit(0)	
 								
 						if i==0:
@@ -893,7 +902,7 @@ def main(argv):
 			file_prefix="result_geneid_"
 			genename_input_file_path = output_file_dirname+'/'+input_file_basename[len(file_prefix):]
 			if	os.path.exists(genename_input_file_path)==False:
-				print 'cant find :'+genename_input_file_path
+				print('cant find :'+genename_input_file_path)
 				sys.exit(0)
 			
 			ckGeneID_file=readCsvDataFromFile(0,',',input_file_path)
@@ -907,7 +916,7 @@ def main(argv):
 				T_ckGeneID_data=map(list,zip(*ckGeneID_data))
 				#print len(T_ckGeneID_data[0])
 				
-				print 'check and adjust one gene name one gene id'
+				print('check and adjust one gene name one gene id')
 				
 				for rows in range(len(T_ckGeneID_data)):#rows means columns
 					#print '*'*100
@@ -931,7 +940,7 @@ def main(argv):
 				##到这里，gene name 只对应一个gene id
 				
 				#查找全文中是否有重复的geneid
-				print 'find same geneid base file'
+				print('find same geneid base file')
 				F_ckGeneID_data=[]
 				F_ckGeneName_data=[]
 				F_row_cols=len(ckGeneID_data[0])
@@ -1001,10 +1010,10 @@ def main(argv):
 								#print	 genename_list_org
 								#print geneid_list_org
 								#print ld5
-								print '*'*10
-								print ld5
+								print('*'*10)
+								print(ld5)
 								for q in range(len(ld5[1])):
-									print T_ckGeneID_data[ld5[1][q]][2]
+									print(T_ckGeneID_data[ld5[1][q]][2])
 									T_ckGeneID_data[ld5[1][q]][2] = genename_list_org[0]
 									#print T_ckGeneID_data[ld5[1][q]][2]
 				
@@ -1017,12 +1026,12 @@ def main(argv):
 			saveCsvDataToFile([],ckGeneName_data,output_file_unique_path)
 		if cmp(sync_genename_on_geneid,'')!=0:
 			if os.path.exists(input_file_path)==False:
-				print 'cant find the file:'+input_file_path
+				print('cant find the file:'+input_file_path)
 				sys.exit(0)
 			unique_expression_geneid_file = input_file_path
 			#print unique_expression_geneid_file
 			if os.path.exists(sync_genename_on_geneid)==False:
-				print 'cant find the file:'+sync_genename_on_geneid
+				print('cant find the file:'+sync_genename_on_geneid)
 				sys.exit(0)
 			unique_gene_setdb_geneid_file = sync_genename_on_geneid
 			
@@ -1035,7 +1044,7 @@ def main(argv):
 			file_prefix="result_unique_"
 			geneid_input_file_path = output_file_dirname+'/'+unique_gene_setdb_geneid_file_basename[len(file_prefix):]
 			if	os.path.exists(geneid_input_file_path)==False:
-				print 'cant find :'+geneid_input_file_path
+				print('cant find :'+geneid_input_file_path)
 				sys.exit(0)
 			sycGeneIDSetDB_file =readCsvDataFromFile(0,',',geneid_input_file_path)
 			sycGeneIDSetDB_Data= sycGeneIDSetDB_file[2:]
@@ -1085,6 +1094,6 @@ def main(argv):
 
 if __name__=='__main__':
 	if len(sys.argv) <=1:
-		print "please use option -h"
+		print("please use option -h")
 	else :
 		main(sys.argv[1:])
